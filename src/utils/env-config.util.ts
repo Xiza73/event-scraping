@@ -20,6 +20,7 @@ export const env = cleanEnv(process.env, {
 
   // Database Configuration
   DB_URI: str({ devDefault: testOnly('mongodb://localhost:27017/test') }),
+  REDIS_URI: str({ devDefault: testOnly('redis://localhost:6379') }),
 
   // Session Configuration
   JWT_SECRET: str(),

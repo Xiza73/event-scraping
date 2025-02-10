@@ -31,6 +31,8 @@ export const ErrorCode = {
   // Rym
   GET_CHARACTER_404_0: 'GRYM4040',
   GET_CHARACTER_404_1: 'GRYM4041',
+  // Event
+  GET_EVENTS_404_0: 'GEVT4040',
 } as const;
 export type ErrorCode = (typeof ErrorCode)[keyof typeof ErrorCode];
 

@@ -3,4 +3,5 @@ export enum Module {
   USER = 'User',
   TASK = 'Task',
   RYM = 'RYM',
+  EVENT = 'Event',
 }

@@ -4,6 +4,7 @@ export const ModulePath = {
   AUTH: '/api/auth',
   TASK: '/api/task',
   RYM: '/api/rym',
+  EVENT: '/api/event',
 } as const;
 export type ModulePath = (typeof ModulePath)[keyof typeof ModulePath];
 

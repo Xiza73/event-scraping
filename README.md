@@ -1,5 +1,7 @@
-# Beatrice - Backend
+# Your Event
 
-## DB Schema
+## Start docker compose
 
-- [Diagram](https://dbdiagram.io/d/beatrice-66cdf3c9cf8e2d1d1c03a5b3)
+```bash
+docker-compose -f redis-docker-compose.yml up -d
+```

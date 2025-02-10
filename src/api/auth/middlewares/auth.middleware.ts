@@ -4,11 +4,11 @@ import { StatusCodes } from 'http-status-codes';
 
 import { userRepository } from '@/api/user/repositories/user.repository';
 import { getUserFromDecodedToken } from '@/api/user/schemas/user.schema';
+import { admin } from '@/config/firebase.config';
 import { ErrorCode } from '@/models/code-mapper.model';
 import { ResponseStatus, ServiceResponse } from '@/models/service-response.model';
 import { handleErrorMessage } from '@/utils/error.util';
 import { handleServiceResponse } from '@/utils/http-handlers.util';
-import { admin } from '@/config/firebase.config';
 
 import { getBearerToken } from '../utils/token.util';
 

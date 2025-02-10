@@ -1,10 +1,18 @@
 import { z } from '@/config/zod.config';
 
 export const ListSchema = z.object({
-  query: z.object({
-    page: z.number(),
-    limit: z.number(),
-  }),
+  page: z
+    .string()
+    .refine((v) => !v || !isNaN(Number(v)), { message: 'Page must be a number' })
+    .transform((v) => Number(v))
+    .transform((v) => (v < 1 ? 1 : v))
+    .transform((v) => Math.floor(v)),
+  limit: z
+    .string()
+    .refine((v) => !v || !isNaN(Number(v)), { message: 'Limit must be a number' })
+    .transform((v) => Number(v))
+    .transform((v) => (v > 100 ? 100 : v))
+    .transform((v) => Math.floor(v)),
 });
 export interface ListRequest {
   page?: number;
@@ -18,4 +26,6 @@ export interface ListResponse<T> {
   page: number;
 }
 
-export const emptyListResponse: ListResponse<null> = { data: [], total: 0, pages: 0, page: 0 };
+export type EmptyListResponse = ListResponse<null>;
+
+export const emptyListResponse: EmptyListResponse = { data: [], total: 0, pages: 0, page: 0 };

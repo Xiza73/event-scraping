@@ -44,7 +44,7 @@ export const puppeteerService = {
     }
   },
 
-  async getPage(url: string): Promise<{ page: Page; close: () => Promise<void> }> {
+  async getPage(url: string, withTime: boolean = false): Promise<{ page: Page; close: () => Promise<void> }> {
     try {
       let browser;
       let page;
@@ -70,8 +70,11 @@ export const puppeteerService = {
         page = await browser.newPage();
       }
 
-      // await page.goto(url, { waitUntil: 'networkidle2' });
-      await page.goto(url);
+      if (withTime) {
+        await page.goto(url, { waitUntil: 'networkidle2' });
+      } else {
+        await page.goto(url);
+      }
 
       return { page, close: browser.close.bind(browser) };
     } catch (error) {

@@ -1,6 +1,7 @@
 import { StatusCodes } from 'http-status-codes';
 
 import { ResourceService } from '@/api/util/scraping/schemas/resource.schema';
+import { joinnusService } from '@/api/util/scraping/services/joinnus.service';
 import { teleticketService } from '@/api/util/scraping/services/teleticket.service';
 import { ticketmasterService } from '@/api/util/scraping/services/ticketmaster.service';
 import { ErrorCode, SuccessCode } from '@/models/code-mapper.model';
@@ -15,7 +16,7 @@ import { GetEventsRequest, GetEventsResponse } from '../schemas/get-events.schem
 export const eventService = {
   getEvents: async (query: GetEventsRequest): Promise<GetEventsResponse> => {
     try {
-      let resourceServices: ResourceService[] = [teleticketService, ticketmasterService];
+      let resourceServices: ResourceService[] = [teleticketService, ticketmasterService, joinnusService];
       let eventsData: IEvent[] = [];
 
       if (query.resource) resourceServices = resourceServices.filter((service) => service.resource === query.resource);

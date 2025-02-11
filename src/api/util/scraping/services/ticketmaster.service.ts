@@ -5,15 +5,10 @@ import { logger } from '@/config/logger.config';
 import { toString } from '@/utils/json.util';
 import { TimeUnit, toSeconds } from '@/utils/time.util';
 
-import { ResourceService } from '../schemas/resource.schema';
+import { ResourceServiceWithFilter } from '../schemas/resource.schema';
 import { puppeteerService } from './puppeteer.service';
 
-interface TicketmasterService extends ResourceService {
-  getMainEvents: () => Promise<IEvent[]>;
-  getWithFilter: (search: string) => Promise<IEvent[]>;
-}
-
-export const ticketmasterService: TicketmasterService = {
+export const ticketmasterService: ResourceServiceWithFilter = {
   resource: EventResource.TICKETMASTER,
 
   getMainEvents: async () => {

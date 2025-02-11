@@ -3,6 +3,7 @@ import { z } from '@/config/zod.config';
 export const EventResource = {
   TELETICKET: 'teleticket',
   TICKETMASTER: 'ticketmaster',
+  JOINNUS: 'joinnus',
 } as const;
 export type EventResource = (typeof EventResource)[keyof typeof EventResource];
 

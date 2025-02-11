@@ -3,7 +3,7 @@ import { redisService } from '@/api/redis/services/redis.service';
 import { log } from '@/config/log.config';
 import { logger } from '@/config/logger.config';
 import { toString } from '@/utils/json.util';
-import { TimeUnit, toMilliseconds } from '@/utils/time.util';
+import { TimeUnit, toSeconds } from '@/utils/time.util';
 
 import { ResourceService } from '../schemas/resource.schema';
 import { puppeteerService } from './puppeteer.service';
@@ -56,7 +56,7 @@ export const teleticketService: ResourceService = {
       await redisService.set({
         key: EventResource.TELETICKET,
         value: toString(uniqueEvents),
-        expiration: toMilliseconds(1, TimeUnit.HOUR),
+        expiration: toSeconds(1, TimeUnit.HOUR),
       });
 
       if (search) {

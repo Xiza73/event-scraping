@@ -6,7 +6,7 @@ import { ErrorCode, SuccessCode } from '@/models/code-mapper.model';
 import { emptyListResponse } from '@/models/list.model';
 import { ResponseStatus, ServiceResponse } from '@/models/service-response.model';
 import { handleErrorMessage } from '@/utils/error.util';
-import { TimeUnit, toMilliseconds } from '@/utils/time.util';
+import { TimeUnit, toSeconds } from '@/utils/time.util';
 
 import { Character, CharacterListResponse } from '../schemas/character.schema';
 import { CharactersList, GetCharactersRequest, GetCharactersResponse } from '../schemas/get-character.schema';
@@ -56,7 +56,7 @@ export const rymService = {
         key: CACHE_KEY,
         params,
         value: JSON.stringify(response),
-        expiration: toMilliseconds(1, TimeUnit.HOUR),
+        expiration: toSeconds(1, TimeUnit.HOUR),
       });
 
       return new ServiceResponse(

@@ -1,6 +1,7 @@
 import puppeteer, { Page } from 'puppeteer';
 
 import { logger } from '@/config/logger.config';
+import { env } from '@/utils/env-config.util';
 
 export const puppeteerService = {
   async getHtml(url: string): Promise<string> {
@@ -45,8 +46,31 @@ export const puppeteerService = {
 
   async getPage(url: string): Promise<{ page: Page; close: () => Promise<void> }> {
     try {
-      const browser = await puppeteer.launch();
-      const page = await browser.newPage();
+      let browser;
+      let page;
+
+      if (env.PROXY_ON) {
+        browser = await puppeteer.launch({
+          args: [
+            `--proxy-server=${env.PROXY_URL}`,
+            // `--proxy-username=${env.PROXY_USERNAME}`,
+            // `--proxy-password=${env.PROXY_PASSWORD}`,
+          ],
+        });
+
+        page = await browser.newPage();
+
+        page.authenticate({
+          username: env.PROXY_USERNAME,
+          password: env.PROXY_PASSWORD,
+        });
+      } else {
+        browser = await puppeteer.launch();
+
+        page = await browser.newPage();
+      }
+
+      // await page.goto(url, { waitUntil: 'networkidle2' });
       await page.goto(url);
 
       return { page, close: browser.close.bind(browser) };

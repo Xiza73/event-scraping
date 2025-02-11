@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { cleanEnv, host, num, port, str, testOnly } from 'envalid';
+import { bool, cleanEnv, host, num, port, str, testOnly } from 'envalid';
 import { ServiceAccount } from 'firebase-admin';
 
 dotenv.config();
@@ -37,6 +37,12 @@ export const env = cleanEnv(process.env, {
   SERVICE_ACCOUNT_KEY_AUTH_PROVIDER_X509_CERT_URL: str(),
   SERVICE_ACCOUNT_KEY_CLIENT_X509_CERT_URL: str(),
   SERVICE_ACCOUNT_KEY_UNIVERSE_DOMAIN: str(),
+
+  // Proxy configuration
+  PROXY_URL: str(),
+  PROXY_USERNAME: str(),
+  PROXY_PASSWORD: str(),
+  PROXY_ON: bool(),
 
   // Test variables
   TEST_ALT_EMAIL: str(),

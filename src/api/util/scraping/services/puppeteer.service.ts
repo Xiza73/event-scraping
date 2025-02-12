@@ -1,7 +1,13 @@
+import { anonymizeProxy, closeAnonymizedProxy } from 'proxy-chain';
 import puppeteer, { Page } from 'puppeteer';
 
 import { logger } from '@/config/logger.config';
 import { env } from '@/utils/env-config.util';
+import { handleErrorMessage } from '@/utils/error.util';
+
+import { proxyService } from '../../proxy/services/proxy.service';
+
+const MAX_RETRIES = 3;
 
 export const puppeteerService = {
   async getHtml(url: string): Promise<string> {
@@ -44,26 +50,50 @@ export const puppeteerService = {
     }
   },
 
-  async getPage(url: string, withTime: boolean = false): Promise<{ page: Page; close: () => Promise<void> }> {
+  async getPage(url: string, _withTime: boolean = false): Promise<{ page: Page; close: () => Promise<void> }> {
     try {
       let browser;
       let page;
 
+      let currentRetry = 0;
+      let anonymizedProxyUrl: string;
+
+      const proxyUrls = await proxyService.getProxies();
+
       if (env.PROXY_ON) {
-        browser = await puppeteer.launch({
-          args: [
-            `--proxy-server=${env.PROXY_URL}`,
-            // `--proxy-username=${env.PROXY_USERNAME}`,
-            // `--proxy-password=${env.PROXY_PASSWORD}`,
-          ],
-        });
+        while (currentRetry < MAX_RETRIES) {
+          try {
+            // const newProxyUrl = await proxyChain.anonymizeProxy(proxyUrls[currentRetry]);
+            const randomProxyUrl = proxyUrls[Math.floor(Math.random() * proxyUrls.length)];
+            const { url, port } = randomProxyUrl;
 
-        page = await browser.newPage();
+            anonymizedProxyUrl = await anonymizeProxy({
+              url,
+              port,
+            });
 
-        page.authenticate({
-          username: env.PROXY_USERNAME,
-          password: env.PROXY_PASSWORD,
-        });
+            browser = await puppeteer.launch({
+              args: [
+                `--proxy-server=${anonymizedProxyUrl}`,
+                // '--no-sandbox',
+                // '--ignore-certificate-errors',
+                // '--ignore-certificate-errors-spki-list',
+              ],
+            });
+
+            page = await browser.newPage();
+
+            break;
+          } catch (error) {
+            logger.error('Error in try puppeteerService.getPage', error);
+
+            currentRetry += 1;
+
+            if (currentRetry === MAX_RETRIES) {
+              throw new Error(error as string);
+            }
+          }
+        }
       } else {
         browser = await puppeteer.launch({
           args: ['--no-sandbox', '--disable-setuid-sandbox'],
@@ -72,15 +102,27 @@ export const puppeteerService = {
         page = await browser.newPage();
       }
 
-      if (withTime) {
-        await page.goto(url, { waitUntil: 'networkidle2' });
-      } else {
-        await page.goto(url);
+      if (!browser) {
+        throw new Error('Browser not found');
       }
 
-      return { page, close: browser.close.bind(browser) };
+      if (!page) {
+        throw new Error('Page not found');
+      }
+
+      await page.goto(url, { waitUntil: 'networkidle2' });
+
+      const close = async () => {
+        await browser.close();
+
+        if (env.PROXY_ON && anonymizedProxyUrl) {
+          await closeAnonymizedProxy(anonymizedProxyUrl, true);
+        }
+      };
+
+      return { page, close };
     } catch (error) {
-      logger.error('Error in puppeteerService.getPage', error);
+      logger.error(handleErrorMessage('Error in puppeteerService.getPage', error));
 
       throw error;
     }

@@ -4,6 +4,7 @@ import { ResourceService } from '@/api/util/scraping/schemas/resource.schema';
 import { joinnusService } from '@/api/util/scraping/services/joinnus.service';
 import { teleticketService } from '@/api/util/scraping/services/teleticket.service';
 import { ticketmasterService } from '@/api/util/scraping/services/ticketmaster.service';
+import { logger } from '@/config/logger.config';
 import { ErrorCode, SuccessCode } from '@/models/code-mapper.model';
 import { emptyListResponse } from '@/models/list.model';
 import { ResponseStatus, ServiceResponse } from '@/models/service-response.model';
@@ -23,8 +24,12 @@ export const eventService = {
 
       await Promise.all(
         resourceServices.map(async (service) => {
-          const events = await service.getEvents(query.search);
-          eventsData = [...eventsData, ...events];
+          try {
+            const events = await service.getEvents(query.search);
+            eventsData = [...eventsData, ...events];
+          } catch (error) {
+            logger.error(handleErrorMessage(`Error getting events from ${service.resource}`, error));
+          }
         })
       );
 

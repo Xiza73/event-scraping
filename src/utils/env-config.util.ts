@@ -40,6 +40,7 @@ export const env = cleanEnv(process.env, {
 
   // Proxy configuration
   PROXY_URL: str(),
+  PROXY_URLS: str(),
   PROXY_USERNAME: str(),
   PROXY_PASSWORD: str(),
   PROXY_ON: bool(),
